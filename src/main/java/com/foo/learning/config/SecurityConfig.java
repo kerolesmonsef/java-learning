@@ -61,6 +61,7 @@ public class SecurityConfig {
                                 })
                         )
                         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                        .userDetailsService(userDetailsService)
                         .build();
     }
 
@@ -81,8 +82,8 @@ public class SecurityConfig {
                 .write(json);
     }
 
-    @Bean
-    @Qualifier("authenticationManagerkero")
+//    @Bean
+//    @Qualifier("authenticationManagerkero")
     public AuthenticationManager authenticationManagerkero() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setPasswordEncoder(new PasswordEncoder() {

@@ -16,6 +16,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Primary
 public class CustomAuthenticationManager implements AuthenticationManager {
     private final UserRepository userRepository;
 

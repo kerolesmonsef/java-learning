@@ -7,8 +7,6 @@ import com.foo.learning.response.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,17 +14,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
-    private final Logger logger = LoggerFactory.getLogger(UserService.class);
+public class AuthenticationService {
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final JWTService jwtService;
     private final UserRepository userRepository;
 
-    @Autowired
-    private AuthenticationManager authenticationManagerkero;
+    private final AuthenticationManager customAuthenticationManager;
 
     public AuthenticationResponse login(LoginRequest request) {
-        authenticationManagerkero.authenticate(
+        customAuthenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         User user = userRepository.findByName(request.getUsername())
