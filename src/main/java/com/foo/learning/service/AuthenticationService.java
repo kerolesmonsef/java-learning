@@ -24,9 +24,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse login(LoginRequest request) {
         customAuthenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        User user = userRepository.findByName(request.getUsername())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);

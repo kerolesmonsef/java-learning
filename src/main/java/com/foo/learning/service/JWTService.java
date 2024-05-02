@@ -102,7 +102,7 @@ public class JWTService {
             return null;
         }
 
-        return userRepository.findByName(userName)
+        return userRepository.findByEmail(userName)
                 .orElse(null);
     }
 }

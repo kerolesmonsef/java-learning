@@ -1,30 +1,22 @@
 package com.foo.learning.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foo.learning.filter.JwtFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,14 +30,16 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
+    private final JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain firstFilterChain(HttpSecurity http) throws Exception {
         return
                 http
                         .csrf(AbstractHttpConfigurer::disable)
+                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/auth/login", "/auth/register", "/test/**", "/test","/error")
+                                .requestMatchers("/auth/login", "/auth/register", "/test/**", "/test","/error","/allow/**")
                                 .permitAll()// note that those routes should be existed
                                 .anyRequest()
                                 .authenticated()
@@ -82,22 +76,4 @@ public class SecurityConfig {
                 .write(json);
     }
 
-//    @Bean
-//    @Qualifier("authenticationManagerkero")
-    public AuthenticationManager authenticationManagerkero() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setPasswordEncoder(new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return rawPassword.toString();
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return true;
-            }
-        });
-        authProvider.setUserDetailsService(userDetailsService);
-        return new ProviderManager(authProvider);
-    }
 }

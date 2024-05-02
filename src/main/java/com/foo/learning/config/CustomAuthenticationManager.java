@@ -23,13 +23,13 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        final User user = userRepository.findByName(authentication.getName())
-                .orElseThrow(() -> new BadCredentialsException("User Name Not Found Exception"));
+        final User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new BadCredentialsException("Email Not Found Exception"));
 
         if (!Objects.equals(user.getPassword(), authentication.getCredentials()
                 .toString())) {
             throw new BadCredentialsException("Wrong password");
         }
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), user.getAuthorities());
     }
 }

@@ -3,6 +3,7 @@ package com.foo.learning.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,16 +15,18 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "user")
+@NoArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String email;
     private String password;
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
     private Owner owner;
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users",fetch = FetchType.EAGER)
     private List<Project> projects;
 
     @Override
@@ -38,7 +41,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.name;
+        return this.email;
     }
 
     @Override
@@ -59,5 +62,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 }
